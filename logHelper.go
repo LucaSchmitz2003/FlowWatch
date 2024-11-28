@@ -100,6 +100,7 @@ func (hook LogrusOtelHook) Fire(entry *logrus.Entry) error {
 func initLogHelper() {
 	// Create a new logrus logger with a JSON formatter
 	logrusLogger := logrus.New()
+	logrusLogger.SetLevel(logrus.DebugLevel) // Set the default log level to info for production environments  // ToDo
 	logrusLogger.SetFormatter(&logrus.JSONFormatter{
 		TimestampFormat: time.RFC3339,
 	})
