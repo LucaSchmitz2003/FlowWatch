@@ -26,9 +26,11 @@ type LogrusContextHook struct{}
 // LogrusOtelHook is a hook for logrus that enables logging to OpenTelemetry.
 type LogrusOtelHook struct{}
 
-// Levels returns all log levels for which the LogrusContextHook should be activated (warning level and higher, because runtime.Caller is expensive).
+// Levels returns all log levels for which the LogrusContextHook should be activated (warning level and higher,
+// because runtime.Caller is expensive and debug, because it should be disabled in production).
 func (hook LogrusContextHook) Levels() []logrus.Level {
 	return []logrus.Level{
+		logrus.DebugLevel,
 		logrus.WarnLevel,
 		logrus.ErrorLevel,
 		logrus.FatalLevel,
