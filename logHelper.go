@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel/attribute"
@@ -44,10 +45,15 @@ func (hook LogrusContextHook) Fire(entry *logrus.Entry) error {
 	_, file, line, ok := runtime.Caller(6) // The number of function calls to skip to get to the caller
 
 	// Add the file and line number to the log entry
-	if ok {
-		entry.Data["file"] = file
-		entry.Data["line"] = line
+	if !ok {
+		err := errors.New("unable to retrieve the caller information and thus the file and line number")
+		GetLogHelper().Logger.Debug(err)
+
+		return nil // The hook should not return an error to ensure that other hooks are also executed
 	}
+
+	entry.Data["file"] = file
+	entry.Data["line"] = line
 
 	return nil
 }
