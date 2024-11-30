@@ -17,7 +17,7 @@ var (
 	once      sync.Once
 )
 
-// LogHelper is an abstraction for the Logger instance to enable easy switching between logrus and other solutions.
+// LogHelper is an abstraction for the Logger instance to enable simpler switching between logging libraries.
 type LogHelper struct {
 	Logger *logrus.Logger
 }
@@ -134,7 +134,7 @@ func addEvent(ctx context.Context, args ...attribute.KeyValue) {
 	}
 }
 
-// Abstraction for log functions to enable easy switching between logrus and other solutions.
+// Abstraction for log functions to enable simpler switching between logging libraries.
 // Context is required to add the event to the span (if possible).
 
 // Debug logs a message at the debug level.
@@ -160,4 +160,38 @@ func (lh *LogHelper) Error(ctx context.Context, args ...interface{}) {
 // Fatal logs a message at the fatal level.
 func (lh *LogHelper) Fatal(ctx context.Context, args ...interface{}) {
 	lh.Logger.WithContext(ctx).Fatal(args...)
+}
+
+// Level is an enumeration for the log levels to abstract it from the logging library.
+type Level uint32
+
+const (
+	Debug Level = iota
+	Info
+	Warn
+	Error
+	Fatal
+)
+
+// getLogrusLevel translates the Level enumeration to the logrus log level.
+func (l *Level) getLogrusLevel() logrus.Level {
+	switch *l {
+	case Debug:
+		return logrus.DebugLevel
+	case Info:
+		return logrus.InfoLevel
+	case Warn:
+		return logrus.WarnLevel
+	case Error:
+		return logrus.ErrorLevel
+	case Fatal:
+		return logrus.FatalLevel
+	default:
+		return logrus.DebugLevel
+	}
+}
+
+// SetLogLevel updates the log level of the logger library.
+func SetLogLevel(level Level) {
+	GetLogHelper().Logger.SetLevel(level.getLogrusLevel())
 }
