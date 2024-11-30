@@ -17,6 +17,7 @@ var (
 	once      sync.Once
 )
 
+// LogHelper is an abstraction for the Logger instance to enable easy switching between logrus and other solutions.
 type LogHelper struct {
 	Logger *logrus.Logger
 }
@@ -42,12 +43,12 @@ func (hook LogrusContextHook) Levels() []logrus.Level {
 // Fire is called when the LogrusContextHook is activated (when a log entry is made).
 func (hook LogrusContextHook) Fire(entry *logrus.Entry) error {
 	// Retrieve the call stack
-	_, file, line, ok := runtime.Caller(6) // The number of function calls to skip to get to the caller
+	_, file, line, ok := runtime.Caller(7) // The number of function calls to skip to get to the caller
 
 	// Add the file and line number to the log entry
 	if !ok {
 		err := errors.New("unable to retrieve the caller information and thus the file and line number")
-		GetLogHelper().Logger.Debug(err)
+		GetLogHelper().Debug(entry.Context, err)
 
 		return nil // The hook should not return an error to ensure that other hooks are also executed
 	}
@@ -100,7 +101,7 @@ func (hook LogrusOtelHook) Fire(entry *logrus.Entry) error {
 func initLogHelper() {
 	// Create a new logrus logger with a JSON formatter
 	logrusLogger := logrus.New()
-	logrusLogger.SetLevel(logrus.DebugLevel) // Set the default log level to info for production environments  // ToDo
+	logrusLogger.SetLevel(logrus.InfoLevel) // Set the default log level to info for production environments
 	logrusLogger.SetFormatter(&logrus.JSONFormatter{
 		TimestampFormat: time.RFC3339,
 	})
@@ -131,4 +132,32 @@ func addEvent(ctx context.Context, args ...attribute.KeyValue) {
 		span.AddEvent("log", trace.WithAttributes(args...))
 		// TODO: Use otel log exporter to export logs even if there is no surrounding span
 	}
+}
+
+// Abstraction for log functions to enable easy switching between logrus and other solutions.
+// Context is required to add the event to the span (if possible).
+
+// Debug logs a message at the debug level.
+func (lh *LogHelper) Debug(ctx context.Context, args ...interface{}) {
+	lh.Logger.WithContext(ctx).Debug(args...)
+}
+
+// Info logs a message at the info level.
+func (lh *LogHelper) Info(ctx context.Context, args ...interface{}) {
+	lh.Logger.WithContext(ctx).Info(args...)
+}
+
+// Warn logs a message at the warning level.
+func (lh *LogHelper) Warn(ctx context.Context, args ...interface{}) {
+	lh.Logger.WithContext(ctx).Warn(args...)
+}
+
+// Error logs a message at the error level.
+func (lh *LogHelper) Error(ctx context.Context, args ...interface{}) {
+	lh.Logger.WithContext(ctx).Error(args...)
+}
+
+// Fatal logs a message at the fatal level.
+func (lh *LogHelper) Fatal(ctx context.Context, args ...interface{}) {
+	lh.Logger.WithContext(ctx).Fatal(args...)
 }
