@@ -3,7 +3,7 @@ package loggingHelper
 import "context"
 
 // Abstraction for log functions to enable simpler switching between logging libraries.
-// Context is required to add the event to the span (if possible).
+// Context is required to add the event to the span (if possible). Refer to the LogrusOtelHook for more information.
 
 // Debug logs a message at the debug level.
 func (lh *LogHelper) Debug(ctx context.Context, args ...interface{}) {
