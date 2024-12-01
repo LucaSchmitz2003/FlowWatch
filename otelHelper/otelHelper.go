@@ -64,7 +64,7 @@ func initOtelHelper() {
 	}
 }
 
-// SetupOtelHelper initializes the OpenTelemetry SDK connection to the backend.
+// SetupOtelHelper initializes the OpenTelemetry SDK connection to the backend if it has not been initialized yet according to the singleton pattern.
 func SetupOtelHelper() {
 	// Create a new LogHelper instance if it does not exist
 	once.Do(func() {
