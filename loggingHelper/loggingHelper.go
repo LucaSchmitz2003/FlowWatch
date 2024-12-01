@@ -86,7 +86,7 @@ func (hook LogrusOtelHook) Fire(entry *logrus.Entry) error {
 	}
 
 	// Create attributes
-	messageValue := attribute.String("level", entry.Message)
+	messageValue := attribute.String("msg", entry.Message)
 	levelValue := attribute.String("level", entry.Level.String())
 	fileValue := getAttributeValue("file", "unknown")
 	lineValue := getAttributeValue("line", "unknown")
