@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/LucaSchmitz2003/FlowWatch/otelHelper"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -27,6 +28,9 @@ type LogrusContextHook struct{}
 
 // LogrusOtelHook is a hook for logrus that enables logging to OpenTelemetry.
 type LogrusOtelHook struct{}
+
+// LogrusOtelShutdownHook is a hook for logrus that ensures that the connection to OpenTelemetry is shut down properly.
+type LogrusOtelShutdownHook struct{}
 
 // Levels returns all log levels for which the LogrusContextHook should be activated (warning level and higher,
 // because runtime.Caller is expensive and debug, because it should be disabled in production).
@@ -97,6 +101,21 @@ func (hook LogrusOtelHook) Fire(entry *logrus.Entry) error {
 	return nil
 }
 
+// Levels returns all log levels for which the LogrusOtelShutdownHook should be activated
+// (fatal level and higher since it terminates the program).
+func (hook LogrusOtelShutdownHook) Levels() []logrus.Level {
+	return []logrus.Level{
+		logrus.FatalLevel,
+		logrus.PanicLevel,
+	}
+}
+
+// Fire is called when the LogrusOtelShutdownHook is activated (when a fatal log entry is made).
+func (hook LogrusOtelShutdownHook) Fire(entry *logrus.Entry) error {
+	otelHelper.Shutdown() // Shutdown the OpenTelemetry connection
+	return nil
+}
+
 // initLogHelper initializes the LogHelper instance.
 func initLogHelper() {
 	// Create a new logrus logger with a JSON formatter
@@ -106,8 +125,9 @@ func initLogHelper() {
 		TimestampFormat: time.RFC3339,
 	})
 
-	logrusLogger.AddHook(LogrusContextHook{}) // Add the LogrusContextHook to add the file and line number to the log entry
-	logrusLogger.AddHook(LogrusOtelHook{})    // Add the LogrusOtelHook to enable logging to OpenTelemetry
+	logrusLogger.AddHook(LogrusContextHook{})      // Add the LogrusContextHook to add the file and line number to the log entry
+	logrusLogger.AddHook(LogrusOtelHook{})         // Add the LogrusOtelHook to enable logging to OpenTelemetry
+	logrusLogger.AddHook(LogrusOtelShutdownHook{}) // Add the LogrusOtelShutdownHook to ensure that the connection is shut down properly
 
 	logHelper = &LogHelper{
 		Logger: logrusLogger,
