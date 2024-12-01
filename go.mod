@@ -3,6 +3,7 @@ module github.com/LucaSchmitz2003/FlowWatch
 go 1.22.1
 
 require (
+	github.com/joho/godotenv v1.5.1
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.3
 	go.opentelemetry.io/otel v1.32.0
