@@ -1,4 +1,4 @@
-package loggingHelper
+package FlowWatch
 
 import (
 	"github.com/sirupsen/logrus"
