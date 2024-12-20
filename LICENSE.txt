@@ -1,8 +1,0 @@
-All Rights Reserved
-
-Copyright Luca Schmitz 2024
-
-Unauthorized use, copying, modification, distribution, or publication
-of this software is strictly prohibited. This software can only be used,
-copied, modified, distributed, or published with explicit permission from
-Luca Schmitz.
