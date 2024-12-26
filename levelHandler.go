@@ -13,6 +13,23 @@ const (
 	Fatal
 )
 
+// String returns the string representation of the log level.
+func (l *Level) String() string {
+	switch *l {
+	case Debug:
+		return "Debug"
+	case Info:
+		return "Info"
+	case Warn:
+		return "Warn"
+	case Error:
+		return "Error"
+	case Fatal:
+		return "Fatal"
+	}
+	return "Unknown"
+}
+
 // getLogrusLevel translates the Level enumeration to the logrus log level.
 func (l *Level) getLogrusLevel() logrus.Level {
 	switch *l {
