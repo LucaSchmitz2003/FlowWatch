@@ -14,8 +14,8 @@ const (
 )
 
 // String returns the string representation of the log level.
-func (l *Level) String() string {
-	switch *l {
+func (l Level) String() string {
+	switch l {
 	case Debug:
 		return "Debug"
 	case Info:
@@ -31,8 +31,8 @@ func (l *Level) String() string {
 }
 
 // getLogrusLevel translates the Level enumeration to the logrus log level.
-func (l *Level) getLogrusLevel() logrus.Level {
-	switch *l {
+func (l Level) getLogrusLevel() logrus.Level {
+	switch l {
 	case Debug:
 		return logrus.DebugLevel
 	case Info:
