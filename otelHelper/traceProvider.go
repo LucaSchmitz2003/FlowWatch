@@ -12,6 +12,15 @@ import (
 )
 
 func initTraceProvider(serviceName, collectorURL string, supportTLS bool) error {
+	// Check if collector URL is provided
+	if collectorURL == "" {
+		log.Println("Collector URL not provided, skipping trace exporter initialization")
+		// Set up a no-op tracer provider instead
+		noopTP := trace.NewTracerProvider()
+		otel.SetTracerProvider(noopTP)
+		return nil
+	}
+
 	// Create a slice to hold the exporter options
 	var opts []otlptracegrpc.Option
 
