@@ -46,8 +46,7 @@ func initOtelHelper() {
 	// Get the collector URL from the environment variables
 	collectorURL := os.Getenv("OTEL_COLLECTOR_URL")
 	if collectorURL == "" {
-		collectorURL = "localhost:4317"
-		log.Println("OTEL_COLLECTOR_URL not set, using default")
+		log.Println("OTEL_COLLECTOR_URL not set, trace export will be skipped")
 	}
 
 	// Get the tls support state from the environment variables
